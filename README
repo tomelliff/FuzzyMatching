@@ -1,0 +1,5 @@
+Open a CSV with patient data containing intellectually disabled (ID) and non intellectually disabled patients (non ID).
+
+Attempt to match non ID patients to ID patients on key criteria: gender, ethnic group (caucasian, non caucasian or unknown), substance abuse, legal status, diagnosis group and then to fuzzily match age to within 10% (although this may be tweaked after usage on real data) of the ID patients' age.
+
+Then sort the potential matches by amount of match opportunities and randomly assign a matched non ID patient to an ID patient. Remove the non ID patient's record from all of the other matches if necessary and then continue.
