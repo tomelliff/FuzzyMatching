@@ -50,24 +50,33 @@ potentialSortedMatches = sorted(onlyMatches,
                                                       len(onlyMatches))))
 
 print potentialSortedMatches
+potSortMatchesAmount = len(potentialSortedMatches)
 print "Potential matches made: %d" % (len(potentialSortedMatches), )
 
-#For each ID patient randomly select a matched non ID patient
-"""
-for matchGroup in potentialSortedMatches:
-    IdMatched = matchGroup[0][4:]
-    nonIdMatched = matchGroup[random.randint(1,len(matchGroup)-1)]
-    print IdMatched, nonIdMatched
-"""
-if potentialSortedMatches != 0:
+# For each ID patient randomly select a matched non ID patient.
+# Then remove the match group from the list of potential matches and
+# also remove the non Id patient from any other potential match groups.
+# Finally, output the amount of matches made
+
+matchesMade = 0
+
+while len(potentialSortedMatches) != 0:
     IdMatched = potentialSortedMatches[0][0][4:]
     nonIdMatched = potentialSortedMatches[0][random.randint(
         1,len(potentialSortedMatches[0])-1)]
     print "ID: " + IdMatched + ", Non ID: " + nonIdMatched
     for matchGroup in potentialSortedMatches:
+        if len(matchGroup) == 1:
+            potentialSortedMatches.remove(matchGroup)
         if matchGroup[0][4:] == IdMatched:
             print "This should be removed: " + str(matchGroup)
-        else:
-            for nonIdPatient in matchGroup[1:]:
-                if nonIdPatient == nonIdMatched:
-                    print "This should also be removed: " + str(matchGroup)
+            potentialSortedMatches.remove(matchGroup)
+            matchesMade += 1
+        for nonIdPatient in matchGroup[1:]:
+            if nonIdPatient == nonIdMatched:
+                print "This should also be removed: " + str(nonIdMatched) + \
+                      " from " + str(matchGroup)
+                matchGroup.remove(nonIdPatient)
+
+print "Managed to make %d matches from %d potential matches" %(
+    matchesMade, potSortMatchesAmount)
