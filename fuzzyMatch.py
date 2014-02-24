@@ -1,7 +1,7 @@
 import csv
 import random
 
-#First, read CSV and put the patients into ID or non ID groups
+# First, read CSV and put the patients into ID or non ID groups
 
 Id = []
 nonId = []
@@ -16,15 +16,17 @@ with open('C:/Users/tomel_000/Downloads/Generated HCR Test Data.csv', 'rb') \
         else:
             nonId += [row]
 
-# Make all potential matches for each ID patient:
-            
+print ("Attempting to match %d ID patients with " % (len(Id),) +
+       "%d non ID patients" % (len(nonId),))
+
+# Make all potential matches for each ID patient:           
 # Match on Ageatassessment ([4]), Gender ([5]), Caucasian_vs_NonC ([7]),
 # DiagnosisGroup ([16]), SubstanceUse ([18]), Legal_Status_Group ([20])
 
 # Ageatassessment to be matched fuzzily by ageFuzziness - a percent of
 # the IdService user's age
 
-ageFuzzinessPercent = 10
+ageFuzzinessPercent = 20
 aF = ageFuzzinessPercent / 100.0
 
 matches = []
@@ -49,34 +51,38 @@ potentialSortedMatches = sorted(onlyMatches,
                                         random.sample(onlyMatches,
                                                       len(onlyMatches))))
 
-print potentialSortedMatches
+print "Potential Matches: " + str(potentialSortedMatches)
 potSortMatchesAmount = len(potentialSortedMatches)
 print "Potential matches made: %d" % (len(potentialSortedMatches), )
 
 # For each ID patient randomly select a matched non ID patient.
 # Then remove the match group from the list of potential matches and
 # also remove the non Id patient from any other potential match groups.
-# Finally, output the amount of matches made
 
 matchesMade = 0
+finalMatches = []
 
 while len(potentialSortedMatches) != 0:
-    IdMatched = potentialSortedMatches[0][0][4:]
-    nonIdMatched = potentialSortedMatches[0][random.randint(
-        1,len(potentialSortedMatches[0])-1)]
-    print "ID: " + IdMatched + ", Non ID: " + nonIdMatched
-    for matchGroup in potentialSortedMatches:
-        if len(matchGroup) == 1:
-            potentialSortedMatches.remove(matchGroup)
-        if matchGroup[0][4:] == IdMatched:
-            print "This should be removed: " + str(matchGroup)
-            potentialSortedMatches.remove(matchGroup)
-            matchesMade += 1
-        for nonIdPatient in matchGroup[1:]:
-            if nonIdPatient == nonIdMatched:
-                print "This should also be removed: " + str(nonIdMatched) + \
-                      " from " + str(matchGroup)
-                matchGroup.remove(nonIdPatient)
+    if len(potentialSortedMatches[0]) == 1:
+        potentialSortedMatches.remove(potentialSortedMatches[0])
+    else:
+        IdMatched = potentialSortedMatches[0][0][4:]
+        nonIdMatched = potentialSortedMatches[0][random.randint(
+            1,len(potentialSortedMatches[0])-1)]
+        print "ID: " + IdMatched + ", Non ID: " + nonIdMatched
+        finalMatches += [[IdMatched, nonIdMatched]]
+        matchesMade += 1
+        potentialSortedMatches.remove(potentialSortedMatches[0])
+        for matchGroup in potentialSortedMatches:
+            for patient in matchGroup:
+                if patient == nonIdMatched:
+                    matchGroup.remove(patient)
+    potentialSortedMatches = sorted(potentialSortedMatches,
+                    key=lambda item:(len(item),
+                                    random.sample(potentialSortedMatches,
+                                                len(potentialSortedMatches))))
+        
+# Finally, output the amount of matches made
 
 print "Managed to make %d matches from %d potential matches" %(
-    matchesMade, potSortMatchesAmount)
+    matchesMade, potSortMatchesAmount)   
